@@ -1,0 +1,32 @@
+name: Build on Windows
+
+on:
+  push:
+    branches: [ v2.4.3 ]
+  pull_request:
+    branches: [ v2.4.3 ]
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy # 可选：添加组件
+
+      - name: Build project
+        run: cargo build --release
+
+      - name: Upload artifact (exe)
+        uses: actions/upload-artifact@v4
+        with:
+          name: myapp-windows-x64
+          path: target/release/*.exe
